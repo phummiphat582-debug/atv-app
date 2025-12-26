@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>ระบบบันทึกซ่อมบำรุง ATV – เวอร์ชันเต็ม</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 12px;
+      color: #f9fafb;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      margin-top: 8px;
+    }
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 18px;
+      padding: 16px 16px 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+      border: 1px solid #1f2937;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card-header small {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      margin-bottom: 8px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+      background: #020617;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.08s ease-out, box-shadow 0.1s ease-out,
+        background 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #22d3ee);
+      color: #020617;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(34, 197, 94, 0.45);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #9ca3af;
+      border: 1px solid #374151;
+      padding-inline: 10px;
+    }
+
+    .btn-ghost:hover {
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: #f97373;
+      border: 1px solid #4b1212;
+      padding-inline: 10px;
+    }
+
+    .btn-danger:hover {
+      background: #1b0707;
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border-radius: 999px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #111827;
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      margin-top: 6px;
+    }
+
+    th,
+    td {
+      padding: 6px 6px;
+      border-bottom: 1px solid #111827;
+      vertical-align: top;
+    }
+
+    th {
+      text-align: left;
+      font-weight: 600;
+      color: #9ca3af;
+      position: sticky;
+      top: 0;
+      background: #020617;
+      z-index: 1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #020617;
+    }
+
+    .table-container {
+      max-height: 360px;
+      overflow: auto;
+      margin-top: 4px;
+      border-radius: 12px;
+      border: 1px solid #111827;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: #111827;
+      color: #9ca3af;
+      gap: 4px;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+    }
+
+    .pill-type-1 .pill-dot {
+      background: #22c55e;
+    }
+
+    .pill-type-2 .pill-dot {
+      background: #fb923c;
+    }
+
+    .pill-type-3 .pill-dot {
+      background: #38bdf8;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 0.75rem;
+    }
+
+    .nowrap {
+      white-space: nowrap;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .summary-item {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #111827;
+      background: #020617;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #111827;
+      color: #9ca3af;
+      border: 1px solid #1f2937;
+    }
+
+    .empty-state {
+      padding: 14px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      font-size: 0.7rem;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .btn-group-right {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .file-input-hidden {
+      display: none;
+    }
+  </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#22c55e">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>ระบบบันทึกซ่อมบำรุง ATV</h1>
+      <div class="subtitle">
+        ใช้เก็บประวัติการซ่อม เปลี่ยนอะไหล่ และค่าใช้จ่ายทั้งหมดของ ATV | ข้อมูลเก็บในเครื่องของคุณเอง
+      </div>
+    </header>
+
+    <main class="grid">
+      <!-- ฝั่งซ้าย: ข้อมูลรถ + ฟอร์มเพิ่มรายการ -->
+      <section>
+        <div class="card" id="vehicle-card">
+          <div class="card-header">
+            <div>
+              <h2>ข้อมูลรถ ATV</h2>
+              <small>บันทึกครั้งเดียว ปรับแก้ได้ตลอด</small>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="btnClearVehicle">
+              ล้าง
+            </button>
+          </div>
+
+          <div class="field">
+            <label>ชื่อเรียกรถ / รหัสภายใน (เช่น ATV-01)</label>
+            <input id="vehicleName" placeholder="เช่น ATV-01 / คันสีแดง" />
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>ยี่ห้อ</label>
+              <input id="vehicleBrand" placeholder="เช่น Honda, CF-Moto" />
+            </div>
+            <div class="field">
+              <label>รุ่น</label>
+              <input id="vehicleModel" placeholder="เช่น 250cc Off-road" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>ปีที่ผลิต</label>
+              <input id="vehicleYear" type="number" min="1980" max="2100" />
+            </div>
+            <div class="field">
+              <label>วันที่ซื้อ</label>
+              <input id="vehiclePurchaseDate" type="date" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>เลขตัวรถ (VIN)</label>
+              <input id="vehicleVin" />
+            </div>
+            <div class="field">
+              <label>เลขเครื่องยนต์</label>
+              <input id="vehicleEngineNo" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>หมายเหตุ</label>
+            <textarea id="vehicleNote" placeholder="สภาพรวม ประวัติเดิม หรือข้อมูลอื่นๆ"></textarea>
+          </div>
+
+          <button class="btn btn-primary" id="btnSaveVehicle">
+            💾 บันทึกข้อมูลรถ
+          </button>
+        </div>
+
+        <div style="height: 10px"></div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>เพิ่มรายการซ่อม / บำรุงรักษา</h2>
+              <small>บันทึกทุกครั้งที่เปลี่ยนอะไหล่ หรือซ่อม</small>
+            </div>
+          </div>
+
+          <form id="logForm">
+            <div class="row">
+              <div class="field">
+                <label>วันที่ทำ <span class="tag">จำเป็น</span></label>
+                <input type="date" id="logDate" required />
+              </div>
+              <div class="field">
+                <label>เลขไมล์ / ชั่วโมงใช้งานตอนซ่อม</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="logOdo"
+                  placeholder="เช่น 125.5"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label>ประเภท</label>
+                <select id="logType">
+                  <option value="service">บำรุงรักษาตามระยะ</option>
+                  <option value="repair">ซ่อมอาการเสีย</option>
+                  <option value="upgrade">ปรับแต่ง / อัพเกรด</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>ผู้ซ่อม / ร้าน</label>
+                <input id="logMechanic" placeholder="เช่น ร้าน A / ซ่อมเอง" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>อาการก่อนซ่อม</label>
+              <textarea
+                id="logSymptom"
+                placeholder="เช่น สตาร์ทยาก รอบไม่นิ่ง มีเสียงดังแปลกๆ"
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label>รายละเอียดงานที่ทำ</label>
+              <textarea
+                id="logWork"
+                placeholder="เช่น เปลี่ยนน้ำมันเครื่อง, เปลี่ยนหัวเทียน, ล้างกรองอากาศ"
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label>อะไหล่ที่ใช้</label>
+              <textarea
+                id="logParts"
+                placeholder="เช่น หัวเทียน NGK CPR7EA-9 1 ตัว, น้ำมันเครื่อง 10W-40 1 ลิตร"
+              ></textarea>
+            </div>
+
+            <div class="row-3">
+              <div class="field">
+                <label>ค่าแรง (บาท)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  id="logLabor"
+                  placeholder="0.00"
+                />
+              </div>
+              <div class="field">
+                <label>ค่าอะไหล่ (บาท)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  id="logPartsCost"
+                  placeholder="0.00"
+                />
+              </div>
+              <div class="field">
+                <label>ค่าใช้จ่ายอื่นๆ (บาท)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  id="logOtherCost"
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>หมายเหตุเพิ่มเติม</label>
+              <textarea
+                id="logNote"
+                placeholder="เช่น นัดเช็คครั้งต่อไป 200 กม. หรือเสียงยังมีเล็กน้อยต้องดูอีกรอบ"
+              ></textarea>
+            </div>
+
+            <button class="btn btn-primary" type="submit">
+              ➕ เพิ่มรายการ
+            </button>
+            <button
+              class="btn btn-ghost"
+              type="button"
+              id="btnResetForm"
+              style="margin-left: 6px"
+            >
+              ล้างฟอร์ม
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ฝั่งขวา: ตารางแสดงประวัติ + ฟีเจอร์เพิ่ม -->
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>ประวัติการซ่อมบำรุง</h2>
+              <small id="vehicleLabelDisplay">สำหรับ ATV</small>
+            </div>
+            <div class="btn-group-right">
+              <button class="btn btn-ghost btn-sm" id="btnExport">
+                📤 Export
+              </button>
+
+              <label class="btn btn-ghost btn-sm">
+                📥 Import
+                <input type="file" id="importFile" class="file-input-hidden" />
+              </label>
+
+              <button class="btn btn-danger btn-sm" id="btnClearAllLogs">
+                ลบประวัติทั้งหมด
+              </button>
+            </div>
+          </div>
+
+          <div class="summary" id="summaryBar">
+            <!-- เติมด้วย JS -->
+          </div>
+
+          <div class="section-title">
+            <h3>สรุปค่าใช้จ่ายรายเดือน</h3>
+            <span class="badge">รวม: ค่าแรง + ค่าอะไหล่ + อื่นๆ</span>
+          </div>
+          <div id="monthlySummary" class="summary">
+            <!-- เติมด้วย JS -->
+          </div>
+
+          <div class="table-container" id="tableContainer">
+            <table>
+              <thead>
+                <tr>
+                  <th>วันที่</th>
+                  <th>ระยะทาง/ชม.</th>
+                  <th>ประเภท</th>
+                  <th>งานที่ทำ / อะไหล่</th>
+                  <th class="text-right">ค่าใช้จ่ายรวม</th>
+                  <th>ผู้ซ่อม</th>
+                  <th class="text-right">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="logTableBody">
+                <!-- เติมด้วย JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="emptyState">
+            ยังไม่มีรายการซ่อมบำรุง เริ่มบันทึกได้จากฟอร์มด้านซ้าย 👈
+          </div>
+        </div>
+
+        <div class="footer-note">
+          * ข้อมูลถูกเก็บในเบราว์เซอร์ของคุณ (LocalStorage) หากล้างข้อมูลเบราว์เซอร์ / ใช้เครื่องอื่น
+          ข้อมูลจะไม่ตามไป | ใช้ปุ่ม Export / Import เพื่อย้ายข้อมูลระหว่างเครื่อง
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY_VEHICLE = "atv_vehicle_info";
+    const STORAGE_KEY_LOGS = "atv_maintenance_logs";
+
+    const vehicleFields = {
+      name: document.getElementById("vehicleName"),
+      brand: document.getElementById("vehicleBrand"),
+      model: document.getElementById("vehicleModel"),
+      year: document.getElementById("vehicleYear"),
+      purchaseDate: document.getElementById("vehiclePurchaseDate"),
+      vin: document.getElementById("vehicleVin"),
+      engineNo: document.getElementById("vehicleEngineNo"),
+      note: document.getElementById("vehicleNote"),
+    };
+
+    const btnSaveVehicle = document.getElementById("btnSaveVehicle");
+    const btnClearVehicle = document.getElementById("btnClearVehicle");
+    const vehicleLabelDisplay = document.getElementById("vehicleLabelDisplay");
+
+    const logForm = document.getElementById("logForm");
+    const btnResetForm = document.getElementById("btnResetForm");
+    const btnClearAllLogs = document.getElementById("btnClearAllLogs");
+    const logTableBody = document.getElementById("logTableBody");
+    const emptyState = document.getElementById("emptyState");
+    const summaryBar = document.getElementById("summaryBar");
+    const monthlySummary = document.getElementById("monthlySummary");
+
+    const logDate = document.getElementById("logDate");
+    const logOdo = document.getElementById("logOdo");
+    const logType = document.getElementById("logType");
+    const logMechanic = document.getElementById("logMechanic");
+    const logSymptom = document.getElementById("logSymptom");
+    const logWork = document.getElementById("logWork");
+    const logParts = document.getElementById("logParts");
+    const logLabor = document.getElementById("logLabor");
+    const logPartsCost = document.getElementById("logPartsCost");
+    const logOtherCost = document.getElementById("logOtherCost");
+    const logNote = document.getElementById("logNote");
+
+    const btnExport = document.getElementById("btnExport");
+
+    let editingIndex = null;
+    const importFile = document.getElementById("importFile");
+
+    function loadVehicleInfo() {
+      const raw = localStorage.getItem(STORAGE_KEY_VEHICLE);
+      if (!raw) {
+        updateVehicleLabel();
+        return;
+      }
+      try {
+        const data = JSON.parse(raw);
+        vehicleFields.name.value = data.name || "";
+        vehicleFields.brand.value = data.brand || "";
+        vehicleFields.model.value = data.model || "";
+        vehicleFields.year.value = data.year || "";
+        vehicleFields.purchaseDate.value = data.purchaseDate || "";
+        vehicleFields.vin.value = data.vin || "";
+        vehicleFields.engineNo.value = data.engineNo || "";
+        vehicleFields.note.value = data.note || "";
+      } catch (e) {
+        console.error("vehicle parse error", e);
+      }
+      updateVehicleLabel();
+    }
+
+    function saveVehicleInfo() {
+      const payload = {
+        name: vehicleFields.name.value.trim(),
+        brand: vehicleFields.brand.value.trim(),
+        model: vehicleFields.model.value.trim(),
+        year: vehicleFields.year.value.trim(),
+        purchaseDate: vehicleFields.purchaseDate.value,
+        vin: vehicleFields.vin.value.trim(),
+        engineNo: vehicleFields.engineNo.value.trim(),
+        note: vehicleFields.note.value.trim(),
+      };
+      localStorage.setItem(STORAGE_KEY_VEHICLE, JSON.stringify(payload));
+      updateVehicleLabel();
+      alert("บันทึกข้อมูลรถแล้ว");
+    }
+
+    function clearVehicleInfo() {
+      if (!confirm("ต้องการล้างข้อมูลรถทั้งหมดใช่หรือไม่?")) return;
+      Object.values(vehicleFields).forEach((el) => (el.value = ""));
+      localStorage.removeItem(STORAGE_KEY_VEHICLE);
+      updateVehicleLabel();
+    }
+
+    function updateVehicleLabel() {
+      const raw = localStorage.getItem(STORAGE_KEY_VEHICLE);
+      let label = "สำหรับ ATV";
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          const pieces = [];
+          if (data.name) pieces.push(data.name);
+          if (data.brand || data.model)
+            pieces.push([data.brand, data.model].filter(Boolean).join(" "));
+          if (pieces.length) label = "สำหรับ " + pieces.join(" | ");
+        } catch (e) {}
+      }
+      vehicleLabelDisplay.textContent = label;
+    }
+
+    function loadLogs() {
+      const raw = localStorage.getItem(STORAGE_KEY_LOGS);
+      if (!raw) return [];
+      try {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) return arr;
+      } catch (e) {
+        console.error("logs parse error", e);
+      }
+      return [];
+    }
+
+    function saveLogs(logs) {
+      localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(logs));
+    }
+
+    function formatNumber(n) {
+      const num = Number(n);
+      if (isNaN(num)) return "-";
+      return num.toLocaleString("th-TH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    function formatDate(d) {
+      if (!d) return "-";
+      try {
+        const date = new Date(d);
+        if (isNaN(date.getTime())) return d;
+        return date.toLocaleDateString("th-TH", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      } catch (e) {
+        return d;
+      }
+    }
+
+    function typeToLabel(t) {
+      switch (t) {
+        case "service":
+          return { text: "บำรุงรักษา", cls: "pill-type-1" };
+        case "repair":
+          return { text: "ซ่อมอาการเสีย", cls: "pill-type-2" };
+        case "upgrade":
+          return { text: "ปรับแต่ง / อัพเกรด", cls: "pill-type-3" };
+        default:
+          return { text: "อื่นๆ", cls: "" };
+      }
+    }
+
+    function renderLogs() {
+      const logs = loadLogs().sort((a, b) => {
+        const da = a.date || "";
+        const db = b.date || "";
+        if (da === db) return 0;
+        return da < db ? 1 : -1;
+      });
+
+      logTableBody.innerHTML = "";
+
+      if (!logs.length) {
+        emptyState.style.display = "block";
+      } else {
+        emptyState.style.display = "none";
+      }
+
+      let totalCostAll = 0;
+      let serviceCount = 0;
+      let repairCount = 0;
+      let upgradeCount = 0;
+      const monthlyMap = {};
+
+      logs.forEach((log, index) => {
+        const tr = document.createElement("tr");
+
+        const totalCost =
+          (Number(log.labor) || 0) +
+          (Number(log.partsCost) || 0) +
+          (Number(log.otherCost) || 0);
+
+        totalCostAll += totalCost;
+
+        if (log.type === "service") serviceCount++;
+        else if (log.type === "repair") repairCount++;
+        else if (log.type === "upgrade") upgradeCount++;
+
+        if (log.date) {
+          const ym = String(log.date).slice(0, 7); // YYYY-MM
+          monthlyMap[ym] = (monthlyMap[ym] || 0) + totalCost;
+        }
+
+        const typeInfo = typeToLabel(log.type);
+
+        const tdDate = document.createElement("td");
+        tdDate.textContent = formatDate(log.date);
+
+        const tdOdo = document.createElement("td");
+        tdOdo.className = "nowrap";
+        tdOdo.textContent = log.odo ? log.odo + "" : "-";
+
+        const tdType = document.createElement("td");
+        tdType.innerHTML = `
+          <span class="pill ${typeInfo.cls}">
+            <span class="pill-dot"></span>
+            ${typeInfo.text}
+          </span>
+        `;
+
+        const tdWork = document.createElement("td");
+        const symptomText = log.symptom ? log.symptom : "";
+        const workText = log.work ? log.work : "";
+        const partsText = log.parts ? log.parts : "";
+        tdWork.innerHTML = `
+          <div><strong>${workText || "-"}</strong></div>
+          ${
+            partsText
+              ? `<div class="muted">อะไหล่: ${partsText}</div>`
+              : ""
+          }
+          ${
+            symptomText
+              ? `<div class="muted">อาการ: ${symptomText}</div>`
+              : ""
+          }
+        `;
+
+        const tdCost = document.createElement("td");
+        tdCost.className = "text-right nowrap";
+        tdCost.textContent = totalCost ? formatNumber(totalCost) : "-";
+
+        const tdMechanic = document.createElement("td");
+        tdMechanic.textContent = log.mechanic || "-";
+
+        const tdActions = document.createElement("td");
+        tdActions.className = "text-right nowrap";
+
+        const btnView = document.createElement("button");
+        btnView.textContent = "รายละเอียด";
+        btnView.className = "btn btn-ghost btn-sm";
+        btnView.addEventListener("click", () => {
+          showDetail(log);
+        });
+
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "แก้ไข";
+        btnEdit.className = "btn btn-ghost btn-sm";
+        btnEdit.style.marginLeft = "4px";
+        btnEdit.addEventListener("click", () => {
+          editLog(index);
+        });
+
+        const btnDelete = document.createElement("button");
+        btnDelete.textContent = "ลบ";
+        btnDelete.className = "btn btn-danger btn-sm";
+        btnDelete.style.marginLeft = "4px";
+        btnDelete.addEventListener("click", () => {
+          deleteLog(index);
+        });
+
+        tdActions.appendChild(btnView);
+        tdActions.appendChild(btnEdit);
+        tdActions.appendChild(btnDelete);
+
+        tr.appendChild(tdDate);
+        tr.appendChild(tdOdo);
+        tr.appendChild(tdType);
+        tr.appendChild(tdWork);
+        tr.appendChild(tdCost);
+        tr.appendChild(tdMechanic);
+        tr.appendChild(tdActions);
+
+        logTableBody.appendChild(tr);
+      });
+
+      // สรุปด้านบน
+      const logsCount = logs.length;
+      summaryBar.innerHTML = "";
+      const items = [];
+
+      items.push(
+        `รายการทั้งหมด: <strong>${logsCount}</strong> ครั้ง`,
+        `ซ่อม: <strong>${repairCount}</strong>`,
+        `บำรุงรักษา: <strong>${serviceCount}</strong>`,
+        `อัพเกรด: <strong>${upgradeCount}</strong>`,
+        `ค่าใช้จ่ายรวม: <strong>${formatNumber(totalCostAll)}</strong> บาท`
+      );
+
+      items.forEach((t) => {
+        const span = document.createElement("div");
+        span.className = "summary-item";
+        span.innerHTML = t;
+        summaryBar.appendChild(span);
+      });
+
+      // สรุปค่าใช้จ่ายรายเดือน
+      monthlySummary.innerHTML = "";
+      const months = Object.keys(monthlyMap).sort();
+      if (!months.length) {
+        const span = document.createElement("div");
+        span.className = "summary-item";
+        span.textContent = "ยังไม่มีข้อมูลรายเดือน";
+        monthlySummary.appendChild(span);
+      } else {
+        months.forEach((mKey) => {
+          const span = document.createElement("div");
+          span.className = "summary-item";
+          span.innerHTML = `${mKey}: <strong>${formatNumber(
+            monthlyMap[mKey]
+          )}</strong> บาท`;
+          monthlySummary.appendChild(span);
+        });
+      }
+    }
+
+    function deleteLog(index) {
+      if (!confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) return;
+      const logs = loadLogs();
+      logs.splice(index, 1);
+      saveLogs(logs);
+      renderLogs();
+    }
+
+    function showDetail(log) {
+      const parts = [];
+      parts.push("วันที่: " + formatDate(log.date));
+      if (log.odo) parts.push("เลขไมล์/ชม.: " + log.odo);
+      parts.push("ประเภท: " + typeToLabel(log.type).text);
+      if (log.mechanic) parts.push("ผู้ซ่อม/ร้าน: " + log.mechanic);
+      if (log.symptom) parts.push("\nอาการก่อนซ่อม:\n" + log.symptom);
+      if (log.work) parts.push("\nงานที่ทำ:\n" + log.work);
+      if (log.parts) parts.push("\nอะไหล่ที่ใช้:\n" + log.parts);
+
+      const labor = Number(log.labor) || 0;
+      const pcost = Number(log.partsCost) || 0;
+      const ocost = Number(log.otherCost) || 0;
+      const total = labor + pcost + ocost;
+
+      parts.push(
+        `\nค่าแรง: ${formatNumber(labor)} บาท` +
+          `\nค่าอะไหล่: ${formatNumber(pcost)} บาท` +
+          `\nค่าใช้จ่ายอื่นๆ: ${formatNumber(ocost)} บาท` +
+          `\nรวม: ${formatNumber(total)} บาท`
+      );
+
+      if (log.note) parts.push("\nหมายเหตุ:\n" + log.note);
+
+      alert(parts.join("\n"));
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const dateValue = logDate.value;
+      if (!dateValue) {
+        alert("กรุณาเลือกวันที่");
+        return;
+      }
+
+      const newLog = {
+        id: Date.now(),
+        date: dateValue,
+        odo: logOdo.value ? Number(logOdo.value) : null,
+        type: logType.value,
+        mechanic: logMechanic.value.trim(),
+        symptom: logSymptom.value.trim(),
+        work: logWork.value.trim(),
+        parts: logParts.value.trim(),
+        labor: logLabor.value ? Number(logLabor.value) : 0,
+        partsCost: logPartsCost.value ? Number(logPartsCost.value) : 0,
+        otherCost: logOtherCost.value ? Number(logOtherCost.value) : 0,
+        note: logNote.value.trim(),
+      };
+
+      const logs = loadLogs();
+      if (editingIndex !== null) {
+        logs[editingIndex] = { ...newLog, id: logs[editingIndex].id };
+        editingIndex = null;
+        const submitBtn = logForm.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.textContent = "➕ เพิ่มรายการ";
+      } else {
+        logs.push(newLog);
+      }
+      saveLogs(logs);
+      renderLogs();
+      logForm.reset();
+      setDefaultDate();
+    }
+
+    function setDefaultDate() {
+      const today = new Date().toISOString().slice(0, 10);
+      logDate.value = today;
+    }
+
+    function resetForm() {
+      logForm.reset();
+      setDefaultDate();
+    }
+
+    function clearAllLogs() {
+      if (
+        !confirm(
+          "ต้องการลบประวัติการซ่อมบำรุงทั้งหมดของ ATV นี้หรือไม่? (ย้อนกลับไม่ได้)"
+        )
+      )
+        return;
+      localStorage.removeItem(STORAGE_KEY_LOGS);
+      renderLogs();
+    }
+
+    // --- Export / Import ข้อมูลทั้งหมด ---
+    function exportData() {
+      const vehicle = localStorage.getItem(STORAGE_KEY_VEHICLE) || "{}";
+      const logs = localStorage.getItem(STORAGE_KEY_LOGS) || "[]";
+      const payload = {
+        vehicle: JSON.parse(vehicle),
+        logs: JSON.parse(logs),
+      };
+      const blob = new Blob([JSON.stringify(payload)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ATV_backup.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.vehicle) {
+            localStorage.setItem(
+              STORAGE_KEY_VEHICLE,
+              JSON.stringify(data.vehicle)
+            );
+          }
+          if (data.logs) {
+            localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(data.logs));
+          }
+          alert("นำเข้าข้อมูลสำเร็จ");
+          loadVehicleInfo();
+          renderLogs();
+        } catch (err) {
+          alert("ไฟล์ไม่ถูกต้อง");
+        }
+      };
+      reader.readAsText(file);
+      // reset value เพื่อให้เลือกไฟล์เดิมซ้ำได้ในอนาคต
+      event.target.value = "";
+    }
+
+    
+    function editLog(index) {
+      const logs = loadLogs();
+      const log = logs[index];
+      if (!log) return;
+      logDate.value = log.date || "";
+      logOdo.value = log.odo || "";
+      logType.value = log.type || "service";
+      logMechanic.value = log.mechanic || "";
+      logSymptom.value = log.symptom || "";
+      logWork.value = log.work || "";
+      logParts.value = log.parts || "";
+      logLabor.value = log.labor || 0;
+      logPartsCost.value = log.partsCost || 0;
+      logOtherCost.value = log.otherCost || 0;
+      logNote.value = log.note || "";
+      editingIndex = index;
+      const submitBtn = logForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.textContent = "💾 บันทึกการแก้ไข";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+function init() {
+      loadVehicleInfo();
+      renderLogs();
+      if (!logDate.value) setDefaultDate();
+
+      btnSaveVehicle.addEventListener("click", saveVehicleInfo);
+      btnClearVehicle.addEventListener("click", clearVehicleInfo);
+      logForm.addEventListener("submit", handleFormSubmit);
+      btnResetForm.addEventListener("click", resetForm);
+      btnClearAllLogs.addEventListener("click", clearAllLogs);
+
+      btnExport.addEventListener("click", exportData);
+      importFile.addEventListener("change", importData);
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD6VXnzEBt0F6uzArAUbGloP3iWzVq8Qp8",
+  authDomain: "atv-maintenance-387e9.firebaseapp.com",
+  projectId: "atv-maintenance-387e9",
+  storageBucket: "atv-maintenance-387e9.firebasestorage.app",
+  messagingSenderId: "209214456252",
+  appId: "1:209214456252:web:b3e8f086de56f2ad38ebb9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const stateRef = doc(db, "atv", "state");
+
+async function ensureDoc() {
+  const snap = await getDoc(stateRef);
+  if (!snap.exists()) {
+    await setDoc(stateRef, { vehicle: {}, logs: [] });
+  }
+}
+ensureDoc();
+
+// Override storage functions to sync with Firestore
+window.loadLogs = function() {
+  const raw = localStorage.getItem("atv_maintenance_logs");
+  if (!raw) return [];
+  try { return JSON.parse(raw) || []; } catch(e){ return []; }
+};
+
+window.saveLogs = async function(logs) {
+  localStorage.setItem("atv_maintenance_logs", JSON.stringify(logs));
+  const vehicleRaw = localStorage.getItem("atv_vehicle_info") || "{}";
+  let vehicle = {};
+  try { vehicle = JSON.parse(vehicleRaw); } catch(e){}
+  await setDoc(stateRef, { vehicle, logs }, { merge: true });
+};
+
+window.saveVehicleInfo = async function() {
+  const payload = {
+    name: document.getElementById("vehicleName").value.trim(),
+    brand: document.getElementById("vehicleBrand").value.trim(),
+    model: document.getElementById("vehicleModel").value.trim(),
+    year: document.getElementById("vehicleYear").value.trim(),
+    purchaseDate: document.getElementById("vehiclePurchaseDate").value,
+    vin: document.getElementById("vehicleVin").value.trim(),
+    engineNo: document.getElementById("vehicleEngineNo").value.trim(),
+    note: document.getElementById("vehicleNote").value.trim(),
+  };
+  localStorage.setItem("atv_vehicle_info", JSON.stringify(payload));
+  await setDoc(stateRef, { vehicle: payload }, { merge: true });
+  if (window.updateVehicleLabel) window.updateVehicleLabel();
+  alert("บันทึกข้อมูลรถแล้ว (ออนไลน์)");
+};
+
+// Realtime sync from Firestore -> localStorage -> render
+onSnapshot(stateRef, (snap) => {
+  if (!snap.exists()) return;
+  const data = snap.data() || {};
+  if (data.vehicle) {
+    localStorage.setItem("atv_vehicle_info", JSON.stringify(data.vehicle));
+  }
+  if (Array.isArray(data.logs)) {
+    localStorage.setItem("atv_maintenance_logs", JSON.stringify(data.logs));
+  }
+  if (window.loadVehicleInfo) window.loadVehicleInfo();
+  if (window.renderLogs) window.renderLogs();
+});
+</script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js');
+  });
+}
+</script>
+
+</body>
+</html>

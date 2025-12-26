@@ -1186,5 +1186,201 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+
+<script>
+// === Sidebar Multi-Vehicle (Mode B): true separation per vehicle ===
+const MULTI_KEY = "atv_multi_store";
+
+function getStore() {
+  try {
+    const raw = localStorage.getItem(MULTI_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return { vehicles: {}, current: "" };
+}
+function setStore(s) {
+  localStorage.setItem(MULTI_KEY, JSON.stringify(s));
+}
+function ensureCurrent() {
+  const s = getStore();
+  if (!s.current) s.current = Object.keys(s.vehicles)[0] || "";
+  setStore(s);
+  return s.current;
+}
+
+// Build sidebar UI
+window.addEventListener("DOMContentLoaded", () => {
+  const left = document.querySelector("main.grid > section");
+  if (!left || document.getElementById("vehicle-sidebar")) return;
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = "vehicle-sidebar";
+  card.innerHTML = `
+    <div class="card-header">
+      <div>
+        <h2>รายการรถ</h2>
+        <small>คลิกเพื่อเลือกคัน</small>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btnAddVehicle">➕ เพิ่มรถคันใหม่</button>
+    </div>
+    <div id="vehicleList"></div>
+  `;
+  left.prepend(card);
+
+  document.getElementById("btnAddVehicle").onclick = () => {
+    const name = prompt("ใส่ชื่อ/รหัสรถใหม่ เช่น ATV-01");
+    if (!name) return;
+    const s = getStore();
+    if (s.vehicles[name]) { alert("มีชื่อนี้แล้ว"); return; }
+    s.vehicles[name] = { info: { name }, logs: [] };
+    s.current = name;
+    setStore(s);
+    refreshSidebar();
+    loadVehicleInfo();
+    renderLogs();
+  };
+
+  refreshSidebar();
+});
+
+function refreshSidebar() {
+  const list = document.getElementById("vehicleList");
+  if (!list) return;
+  const s = getStore();
+  ensureCurrent();
+  list.innerHTML = "";
+  const names = Object.keys(s.vehicles);
+  if (!names.length) {
+    list.innerHTML = `<div class="empty-state">ยังไม่มีรถ กด ➕ เพื่อเพิ่มคันแรก</div>`;
+    return;
+  }
+  names.forEach(n => {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-ghost btn-sm";
+    btn.style.margin = "4px 6px 0 0";
+    btn.textContent = (s.current === n ? "▶ " : "") + n;
+    btn.onclick = () => {
+      const st = getStore();
+      st.current = n;
+      setStore(st);
+      refreshSidebar();
+      loadVehicleInfo();
+      renderLogs();
+    };
+    list.appendChild(btn);
+  });
+}
+
+// === Override core functions to be per-vehicle ===
+const _loadVehicleInfo = window.loadVehicleInfo;
+const _saveVehicleInfo = window.saveVehicleInfo;
+const _clearVehicleInfo = window.clearVehicleInfo;
+const _loadLogs = window.loadLogs;
+const _saveLogs = window.saveLogs;
+const _clearAllLogs = window.clearAllLogs;
+
+window.loadVehicleInfo = function() {
+  const s = getStore();
+  const cur = ensureCurrent();
+  if (!cur || !s.vehicles[cur]) {
+    Object.values(vehicleFields).forEach(el => el.value = "");
+    updateVehicleLabel();
+    refreshSidebar();
+    return;
+  }
+  const info = s.vehicles[cur].info || {};
+  vehicleFields.name.value = info.name || cur || "";
+  vehicleFields.brand.value = info.brand || "";
+  vehicleFields.model.value = info.model || "";
+  vehicleFields.year.value = info.year || "";
+  vehicleFields.purchaseDate.value = info.purchaseDate || "";
+  vehicleFields.vin.value = info.vin || "";
+  vehicleFields.engineNo.value = info.engineNo || "";
+  vehicleFields.note.value = info.note || "";
+  updateVehicleLabel();
+  refreshSidebar();
+};
+
+window.saveVehicleInfo = function() {
+  const name = vehicleFields.name.value.trim();
+  if (!name) { alert("กรุณาใส่ชื่อ/รหัสรถก่อน"); return; }
+  const payload = {
+    name,
+    brand: vehicleFields.brand.value.trim(),
+    model: vehicleFields.model.value.trim(),
+    year: vehicleFields.year.value.trim(),
+    purchaseDate: vehicleFields.purchaseDate.value,
+    vin: vehicleFields.vin.value.trim(),
+    engineNo: vehicleFields.engineNo.value.trim(),
+    note: vehicleFields.note.value.trim(),
+  };
+  const s = getStore();
+  s.vehicles[name] = s.vehicles[name] || { info: {}, logs: [] };
+  s.vehicles[name].info = payload;
+  s.current = name;
+  setStore(s);
+  updateVehicleLabel();
+  refreshSidebar();
+  alert("บันทึกข้อมูลรถแล้ว");
+};
+
+window.clearVehicleInfo = function() {
+  const s = getStore();
+  const cur = ensureCurrent();
+  if (!cur) return;
+  if (!confirm("ต้องการลบรถคันนี้ใช่หรือไม่?")) return;
+  delete s.vehicles[cur];
+  s.current = Object.keys(s.vehicles)[0] || "";
+  setStore(s);
+  Object.values(vehicleFields).forEach(el => el.value = "");
+  refreshSidebar();
+  renderLogs();
+};
+
+window.loadLogs = function() {
+  const s = getStore();
+  const cur = ensureCurrent();
+  if (!cur || !s.vehicles[cur]) return [];
+  return s.vehicles[cur].logs || [];
+};
+
+window.saveLogs = function(logs) {
+  const s = getStore();
+  const cur = ensureCurrent();
+  if (!cur) return;
+  s.vehicles[cur] = s.vehicles[cur] || { info: {}, logs: [] };
+  s.vehicles[cur].logs = logs;
+  setStore(s);
+};
+
+window.clearAllLogs = function() {
+  const s = getStore();
+  const cur = ensureCurrent();
+  if (!cur) return;
+  if (!confirm("ต้องการลบประวัติทั้งหมดของคันนี้ใช่หรือไม่?")) return;
+  s.vehicles[cur].logs = [];
+  setStore(s);
+  renderLogs();
+};
+</script>
+
+
+<script>
+// === Fix: bind Export / Import buttons globally ===
+window.addEventListener("DOMContentLoaded", () => {
+  if (typeof exportData === "function") {
+    window.exportData = exportData;
+    const btn = document.getElementById("btnExport");
+    if (btn) btn.onclick = () => window.exportData();
+  }
+  if (typeof importData === "function") {
+    window.importData = importData;
+    const inp = document.getElementById("importFile");
+    if (inp) inp.onchange = (e) => window.importData(e);
+  }
+});
+</script>
+
 </body>
 </html>

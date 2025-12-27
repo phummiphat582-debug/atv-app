@@ -1125,57 +1125,17 @@ const stateRef = doc(db, "atv", "state");
 async function ensureDoc() {
   const snap = await getDoc(stateRef);
   if (!snap.exists()) {
-    await setDoc(stateRef, { vehicle: {}, logs: [] });
+    await setDoc(stateRef, { vehicles: {} });
   }
 }
 ensureDoc();
 
-// Override storage functions to sync with Firestore
-window.loadLogs = function() {
-  const raw = localStorage.getItem("atv_maintenance_logs");
-  if (!raw) return [];
-  try { return JSON.parse(raw) || []; } catch(e){ return []; }
-};
-
-window.saveLogs = async function(logs) {
-  localStorage.setItem("atv_maintenance_logs", JSON.stringify(logs));
-  const vehicleRaw = localStorage.getItem("atv_vehicle_info") || "{}";
-  let vehicle = {};
-  try { vehicle = JSON.parse(vehicleRaw); } catch(e){}
-  await setDoc(stateRef, { vehicle, logs }, { merge: true });
-};
-
-window.saveVehicleInfo = async function() {
-  const payload = {
-    name: document.getElementById("vehicleName").value.trim(),
-    brand: document.getElementById("vehicleBrand").value.trim(),
-    model: document.getElementById("vehicleModel").value.trim(),
-    year: document.getElementById("vehicleYear").value.trim(),
-    purchaseDate: document.getElementById("vehiclePurchaseDate").value,
-    vin: document.getElementById("vehicleVin").value.trim(),
-    engineNo: document.getElementById("vehicleEngineNo").value.trim(),
-    note: document.getElementById("vehicleNote").value.trim(),
-  };
-  localStorage.setItem("atv_vehicle_info", JSON.stringify(payload));
-  await setDoc(stateRef, { vehicle: payload }, { merge: true });
-  if (window.updateVehicleLabel) window.updateVehicleLabel();
-  alert("บันทึกข้อมูลรถแล้ว (ออนไลน์)");
-};
-
-// Realtime sync from Firestore -> localStorage -> render
+// ❌ ไม่ sync logs กองเดียว เพื่อไม่ให้ชนกับ Multi-Vehicle
 onSnapshot(stateRef, (snap) => {
   if (!snap.exists()) return;
-  const data = snap.data() || {};
-  if (data.vehicle) {
-    localStorage.setItem("atv_vehicle_info", JSON.stringify(data.vehicle));
-  }
-  if (Array.isArray(data.logs)) {
-    localStorage.setItem("atv_maintenance_logs", JSON.stringify(data.logs));
-  }
-  if (window.loadVehicleInfo) window.loadVehicleInfo();
-  if (window.renderLogs) window.renderLogs();
 });
 </script>
+
 
 
 <script>
@@ -1285,6 +1245,7 @@ window.loadVehicleInfo = function() {
   const cur = ensureCurrent();
   if (!cur || !s.vehicles[cur]) {
     Object.values(vehicleFields).forEach(el => el.value = "");
+    localStorage.removeItem(STORAGE_KEY_VEHICLE);
     updateVehicleLabel();
     refreshSidebar();
     return;
@@ -1298,6 +1259,8 @@ window.loadVehicleInfo = function() {
   vehicleFields.vin.value = info.vin || "";
   vehicleFields.engineNo.value = info.engineNo || "";
   vehicleFields.note.value = info.note || "";
+  // sync to legacy key for compatibility
+  localStorage.setItem(STORAGE_KEY_VEHICLE, JSON.stringify(info));
   updateVehicleLabel();
   refreshSidebar();
 };
@@ -1320,6 +1283,8 @@ window.saveVehicleInfo = function() {
   s.vehicles[name].info = payload;
   s.current = name;
   setStore(s);
+  // sync to legacy key for compatibility
+  localStorage.setItem(STORAGE_KEY_VEHICLE, JSON.stringify(payload));
   updateVehicleLabel();
   refreshSidebar();
   alert("บันทึกข้อมูลรถแล้ว");
@@ -1334,6 +1299,7 @@ window.clearVehicleInfo = function() {
   s.current = Object.keys(s.vehicles)[0] || "";
   setStore(s);
   Object.values(vehicleFields).forEach(el => el.value = "");
+  localStorage.removeItem(STORAGE_KEY_VEHICLE);
   refreshSidebar();
   renderLogs();
 };

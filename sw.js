@@ -1,12 +1,12 @@
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // ❌ อย่าไปดัก request ของ Firebase / Google
+  // ❌ ไม่ดัก request ของ Firebase / Google
   if (
     url.origin.includes('googleapis.com') ||
     url.origin.includes('gstatic.com')
   ) {
-    return;
+    return; // ปล่อยให้ browser จัดการเอง
   }
 
   e.respondWith(

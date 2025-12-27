@@ -1,12 +1,15 @@
+self.addEventListener('install', e => self.skipWaiting());
+self.addEventListener('activate', e => self.clients.claim());
+
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // ❌ ไม่ดัก request ของ Firebase / Google
+  // ❌ อย่าดัก Firebase / Google APIs
   if (
     url.origin.includes('googleapis.com') ||
     url.origin.includes('gstatic.com')
   ) {
-    return; // ปล่อยให้ browser จัดการเอง
+    return;
   }
 
   e.respondWith(

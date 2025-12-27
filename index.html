@@ -1125,15 +1125,34 @@ const stateRef = doc(db, "atv", "state");
 async function ensureDoc() {
   const snap = await getDoc(stateRef);
   if (!snap.exists()) {
-    await setDoc(stateRef, { vehicles: {} });
+    await setDoc(stateRef, { vehicles: {}, current: "" });
   }
 }
 ensureDoc();
 
-// ❌ ไม่ sync logs กองเดียว เพื่อไม่ให้ชนกับ Multi-Vehicle
-onSnapshot(stateRef, (snap) => {
+// 🔄 Firestore -> Local (realtime)
+onSnapshot(stateRef, snap => {
   if (!snap.exists()) return;
+  const data = snap.data() || {};
+  localStorage.setItem("atv_multi_store", JSON.stringify({
+    vehicles: data.vehicles || {},
+    current: data.current || ""
+  }));
+  if (window.loadVehicleInfo) window.loadVehicleInfo();
+  if (window.renderLogs) window.renderLogs();
 });
+
+// 🌐 Local -> Firestore
+window.syncToCloud = async function() {
+  try {
+    const raw = localStorage.getItem("atv_multi_store");
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    await setDoc(stateRef, data, { merge: true });
+  } catch (e) {
+    console.error("sync error", e);
+  }
+};
 </script>
 
 
@@ -1165,6 +1184,7 @@ function ensureCurrent() {
   const s = getStore();
   if (!s.current) s.current = Object.keys(s.vehicles)[0] || "";
   setStore(s);
+  if (window.syncToCloud) window.syncToCloud();
   return s.current;
 }
 
@@ -1196,6 +1216,7 @@ window.addEventListener("DOMContentLoaded", () => {
     s.vehicles[name] = { info: { name }, logs: [] };
     s.current = name;
     setStore(s);
+  if (window.syncToCloud) window.syncToCloud();
     refreshSidebar();
     loadVehicleInfo();
     renderLogs();
@@ -1224,6 +1245,7 @@ function refreshSidebar() {
       const st = getStore();
       st.current = n;
       setStore(st);
+      if (window.syncToCloud) window.syncToCloud();
       refreshSidebar();
       loadVehicleInfo();
       renderLogs();
@@ -1283,6 +1305,7 @@ window.saveVehicleInfo = function() {
   s.vehicles[name].info = payload;
   s.current = name;
   setStore(s);
+  if (window.syncToCloud) window.syncToCloud();
   // sync to legacy key for compatibility
   localStorage.setItem(STORAGE_KEY_VEHICLE, JSON.stringify(payload));
   updateVehicleLabel();
@@ -1298,6 +1321,7 @@ window.clearVehicleInfo = function() {
   delete s.vehicles[cur];
   s.current = Object.keys(s.vehicles)[0] || "";
   setStore(s);
+  if (window.syncToCloud) window.syncToCloud();
   Object.values(vehicleFields).forEach(el => el.value = "");
   localStorage.removeItem(STORAGE_KEY_VEHICLE);
   refreshSidebar();
@@ -1318,6 +1342,7 @@ window.saveLogs = function(logs) {
   s.vehicles[cur] = s.vehicles[cur] || { info: {}, logs: [] };
   s.vehicles[cur].logs = logs;
   setStore(s);
+  if (window.syncToCloud) window.syncToCloud();
 };
 
 window.clearAllLogs = function() {
@@ -1327,6 +1352,7 @@ window.clearAllLogs = function() {
   if (!confirm("ต้องการลบประวัติทั้งหมดของคันนี้ใช่หรือไม่?")) return;
   s.vehicles[cur].logs = [];
   setStore(s);
+  if (window.syncToCloud) window.syncToCloud();
   renderLogs();
 };
 </script>
